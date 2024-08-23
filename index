@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Clean Jekyll Site</title>
+    <style>
+        /* Ensure no scrolling and basic body styling */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #D01E3C; /* Set background color to the red color from the image */
+            overflow: hidden; /* Prevents scrolling */
+            position: relative; /* Required for positioning elements relative to the viewport */
+        }
+
+        /* Taskbar at the top */
+        .taskbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 4;
+            box-sizing: border-box;
+        }
+
+        /* Logo in the top left corner */
+        .taskbar .logo {
+            height: 40px; /* Slightly larger logo */
+            margin-top: 10px; /* Space below the navigation bar */
+        }
+
+        /* Navigation links in the top right */
+        .taskbar .nav-links {
+            display: flex;
+            gap: 30px; /* Increase gap to ensure no cutoff */
+            margin-top: 10px; /* Space below the navigation bar */
+            white-space: nowrap;
+        }
+
+        .taskbar .nav-links a {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+
+        /* Video wrapper to create the border and center the video */
+        .video-wrapper {
+            width: 85vw; /* 80% of the viewport width */
+            height: 85vh; /* 60% of the viewport height */
+            background-color: #000; /* Fallback background color */
+            padding: 0; /* Remove the padding */
+            box-sizing: content-box; /* Ensures content-box behavior */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 80px auto 0 auto; /* Center horizontally and add space from the top for the taskbar */
+            position: relative; /* Ensure child elements are positioned correctly */
+        }
+
+        /* The video itself with a fade effect */
+        #myVideo {
+            width: 100%;
+            height: 100%; /* Fill the video wrapper */
+            display: block;
+            opacity: 0;
+            transition: opacity 1s ease-in-out; /* Fade effect */
+            background-color: #D01E3C; /* Fallback in case the video doesn't load */
+        }
+
+        /* Show video with opacity 1 */
+        #myVideo.show {
+            opacity: 1;
+        }
+
+        /* Left middle logo, positioned on top of the video */
+        #leftMiddleLogo {
+            position: absolute;
+            top: 25%; /* Adjust to position over the video */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20vw; /* Adjust the size based on the viewport width */
+            height: 20vh;
+            z-index: 5; /* Ensure it stays above the video */
+            transition: opacity 0.3s ease; /* Smooth transition for showing/hiding */
+        }
+
+        /* Bottom right WINLAB logo, centered over the video */
+        #bottomRightLogo {
+            position: absolute;
+            top: 75%; /* Adjust to position over the video */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 25vw; /* Adjust size */
+            height: auto;
+            z-index: 5;
+            transition: opacity 0.3s ease; /* Smooth transition for showing/hiding */
+        }
+
+        /* About Me button, positioned below the WINLAB logo and centered */
+        .about-button {
+            position: absolute;
+            top: 85%; /* Adjust to position over the video */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 5;
+            transition: opacity 0.3s ease; /* Smooth transition for showing/hiding */
+        }
+
+        /* Hide the logos and button when the video is playing */
+        .hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <!-- Logo in the top left -->
+        <img src="./assets/images/Rutgers.png" alt="Logo" class="logo">
+
+        <!-- Navigation links in the top right -->
+        <div class="nav-links">
+            <a href="#">Projects</a>
+            <a href="#">Team</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
+
+    <!-- Video wrapper to create the border and center the video -->
+    <div class="video-wrapper">
+        <video id="myVideo" muted>
+            <source src="./assets/videos/background.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <!-- Left middle logo -->
+        <img id="leftMiddleLogo" src="./assets/images/logo.svg" alt="Left Middle Logo">
+    </div>
+
+    <!-- Bottom right WINLAB logo -->
+    <img id="bottomRightLogo" src="./assets/images/logo.png" alt="Bottom Right Logo">
+
+    <!-- About Me Button -->
+    <button class="about-button">About Me</button>
+
+    <!-- JavaScript to handle video play/pause and looping functionality -->
+    <script>
+    const video = document.getElementById('myVideo');
+    const leftMiddleLogo = document.getElementById('leftMiddleLogo');
+    const bottomRightLogo = document.getElementById('bottomRightLogo');
+    const aboutButton = document.querySelector('.about-button');
+    let lastPauseTime = 11;  // Start at 11 seconds
+
+    // Show the video with a fade effect
+    video.addEventListener('loadeddata', function() {
+        video.classList.add('show');
+    });
+
+    // Handle video click to pause or resume
+    video.addEventListener('click', function() {
+        if (video.paused) {
+            // If paused, resume from the lastPauseTime, or skip to 11 seconds if at the start
+            if (video.currentTime === 0) {
+                video.currentTime = 11;
+            } else {
+                video.currentTime = lastPauseTime;
+            }
+            video.play();
+            leftMiddleLogo.classList.add('hidden'); // Hide the left middle logo when playing
+            bottomRightLogo.classList.add('hidden'); // Hide the WINLAB logo when playing
+            aboutButton.classList.add('hidden'); // Hide the About Me button when playing
+        } else {
+            // If playing, record the current time, pause the video, and reset to the first frame
+            lastPauseTime = video.currentTime;
+            video.pause();
+            video.currentTime = 0;  // Go back to the first frame
+            leftMiddleLogo.classList.remove('hidden'); // Show the left middle logo when paused
+            bottomRightLogo.classList.remove('hidden'); // Show the WINLAB logo when paused
+            aboutButton.classList.remove('hidden'); // Show the About Me button when paused
+        }
+    });
+
+    // Start video from the 11-second mark when it is played
+    video.addEventListener('play', function() {
+        if (video.currentTime < 11) {
+            video.currentTime = 11;  // Skip the first 10 seconds
+        }
+    });
+
+    // Reset to the 0-second mark when the video ends naturally
+    video.addEventListener('ended', function() {
+        video.currentTime = 0;  // Reset to the first frame
+        leftMiddleLogo.classList.remove('hidden'); // Show the left middle logo when the video ends
+        bottomRightLogo.classList.remove('hidden'); // Show the WINLAB logo when the video ends
+        aboutButton.classList.remove('hidden'); // Show the About Me button when the video ends
+    });
+    </script>
+
+</body>
+</html>
+

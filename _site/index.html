@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Clean Jekyll Site</title>
+    <style>
+        /* Ensure no scrolling and basic body styling */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #D01E3C; /* Set background color to the red color from the image */
+            overflow: hidden; /* Prevents scrolling */
+            position: relative; /* Required for positioning elements relative to the viewport */
+        }
+
+        /* Taskbar at the top */
+        .taskbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 4;
+            box-sizing: border-box;
+        }
+
+        /* Logo in the top left corner */
+        .taskbar .logo {
+            height: 40px; /* Slightly larger logo */
+            margin-top: 10px; /* Space below the navigation bar */
+        }
+
+        /* Navigation links in the top right */
+        .taskbar .nav-links {
+            display: flex;
+            gap: 30px; /* Increase gap to ensure no cutoff */
+            margin-top: 10px; /* Space below the navigation bar */
+            white-space: nowrap;
+        }
+
+        .taskbar .nav-links a {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+
+        /* Video wrapper to create the border and center the video */
+        .video-wrapper {
+            width: 85vw; /* 85% of the viewport width */
+            height: 85vh; /* 85% of the viewport height */
+            background-color: #000; /* Fallback background color */
+            padding: 0; /* Remove the padding */
+            box-sizing: content-box; /* Ensures content-box behavior */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 80px auto 0 auto; /* Center horizontally and add space from the top for the taskbar */
+            position: relative; /* Ensure child elements are positioned correctly */
+        }
+
+        /* The video itself with a fade effect */
+        #myVideo {
+            width: 100%;
+            height: 100%; /* Fill the video wrapper */
+            display: block;
+            opacity: 0;
+            transition: opacity 1s ease-in-out; /* Fade effect */
+            background-color: #D01E3C; /* Fallback in case the video doesn't load */
+        }
+
+        /* Show video with opacity 1 */
+        #myVideo.show {
+            opacity: 1;
+        }
+
+        /* Left middle logo, positioned on top of the video */
+        #leftMiddleLogo {
+            position: absolute;
+            top: 25%; /* Adjust to position over the video */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20vw; /* Adjust the size based on the viewport width */
+            height: 20vh;
+            z-index: 5; /* Ensure it stays above the video */
+            transition: opacity 0.3s ease; /* Smooth transition for showing/hiding */
+        }
+
+        /* Bottom right WINLAB logo, centered over the video */
+        #bottomRightLogo {
+            position: absolute;
+            top: 73%; /* Adjust to position over the video */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20vw; /* Adjust size */
+            height: auto;
+            z-index: 5;
+            transition: opacity 0.3s ease; /* Smooth transition for showing/hiding */
+        }
+
+        /* About Me button, positioned below the WINLAB logo and centered */
+        .about-button {
+            position: absolute;
+            top: 80%; /* Adjust to position over the video */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 5;
+            transition: all 1.5s ease; /* Smooth transition for all properties */
+            opacity: 1; /* Initial opacity */
+        }
+
+        /* Expanded state for About Me button */
+        .about-button.expanded {
+            width: 40vw; /* Expand width */
+            height: auto;
+            padding: 20px; /* Expand padding */
+            opacity: 0.8; /* Slight translucency */
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly translucent background */
+        }
+.about-text {
+    position: absolute;
+    top: 90%; /* Position below the button */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30vw; /* Increase the width of the text box */
+    max-height: 10vh; /* Set a maximum height to ensure it fits within the viewport */
+    padding: 10px;
+    background-color: white;
+    color: black;
+    font-size: 12px; /* Slightly smaller font size to fit more text */
+    line-height: 1.25; /* Adjust line spacing for readability */
+    overflow-y: auto; /* Allow scrolling if content exceeds max height */
+    z-index: 5;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    cursor: pointer; /* Allows clicking on the text box itself */
+}
+
+/* Show the About Me text box */
+.show-text {
+    opacity: 1;
+    visibility: visible;
+}
+        /* Hide the logos, button, and text box when the video is playing */
+        .hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- Taskbar -->
+    <div class="taskbar">
+	<a href="index.html">
+        <!-- Logo in the top left -->
+        <img src="./assets/images/Rutgers.png" alt="Logo" class="logo">
+	</a>
+        <!-- Navigation links in the top right -->
+        <div class="nav-links">
+            <a href="./pages/projects.html">Projects</a>
+            <a href="./pages/team.html">Team</a>
+            <a href="./pages/contact.html">Contact</a>
+        </div>
+    </div>
+
+    <!-- Video wrapper to create the border and center the video -->
+    <div class="video-wrapper">
+        <video id="myVideo" muted>
+            <source src="./assets/videos/background.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <!-- Left middle logo -->
+        <img id="leftMiddleLogo" src="./assets/images/logo.svg" alt="Left Middle Logo">
+    </div>
+
+    <!-- Bottom right WINLAB logo -->
+    <img id="bottomRightLogo" src="./assets/images/logo.png" alt="Bottom Right Logo">
+
+    <!-- About Me Button -->
+    <button class="about-button" id="aboutButton">Overview</button>
+
+    <!-- About Me text box -->
+    <div class="about-text" id="aboutText">
+        <p>
+	The radio frequency band spanning from 7.125 GHz to 24 GHz, referred to as Frequency Range 3 (FR3), holds significant promise for the evolution of next-generation cellular systems. This project aims to extend the current COSMOS testbed at WINLAB to facilitate experimental studies of coexistence between terrestrial and satellite systems using software-defined radios (SDR) to emulate dense 5G cellular networks and satellite equipment. Specifically, the project focuses on spectrum sharing between terrestrial 5G and active commercial satellites in the 12.2-12.7 GHz band, and adjacent band coexistence between terrestrial 5G, operating at 10-10.5 GHz, and passive scientific satellites in the 10.6-10.7 GHz band. Metamaterial software-defined beamforming is used to emulate coexistence with satellites like non-geostationary orbit fixed satellite service (NGSO-FSS), and hot-cold calibration and comparison to datasets from on-orbit AMSR-E and AMSR2 sensors is used to enhance the reliability and realism of radiometer interference experiments.
+        </p>
+    </div>
+
+    <!-- JavaScript to handle video play/pause, About Me expansion, and looping functionality -->
+    <script>
+        const video = document.getElementById('myVideo');
+        const leftMiddleLogo = document.getElementById('leftMiddleLogo');
+        const bottomRightLogo = document.getElementById('bottomRightLogo');
+        const aboutButton = document.getElementById('aboutButton');
+        const aboutText = document.getElementById('aboutText');
+        let lastPauseTime = 11;  // Start at 11 seconds
+
+        // Show the video with a fade effect
+        video.addEventListener('loadeddata', function() {
+            video.classList.add('show');
+        });
+
+        // Handle video click to pause or resume
+        video.addEventListener('click', function() {
+            if (video.paused) {
+                // If paused, resume from the lastPauseTime, or skip to 11 seconds if at the start
+                if (video.currentTime === 0) {
+                    video.currentTime = 11;
+                } else {
+                    video.currentTime = lastPauseTime;
+                }
+                video.play();
+                leftMiddleLogo.classList.add('hidden'); // Hide the left middle logo when playing
+                bottomRightLogo.classList.add('hidden'); // Hide the WINLAB logo when playing
+                aboutButton.classList.add('hidden'); // Hide the About Me button when playing
+                aboutText.classList.remove('show-text'); // Hide the About Me text box when playing
+            } else {
+                // If playing, record the current time, pause the video, and reset to the first frame
+                lastPauseTime = video.currentTime;
+                video.pause();
+                video.currentTime = 0;  // Go back to the first frame
+                leftMiddleLogo.classList.remove('hidden'); // Show the left middle logo when paused
+                bottomRightLogo.classList.remove('hidden'); // Show the WINLAB logo when paused
+                aboutButton.classList.remove('hidden'); // Show the About Me button when paused
+            }
+        });
+
+        // Start video from the 11-second mark when it is played
+        video.addEventListener('play', function() {
+            if (video.currentTime < 11) {
+                video.currentTime = 11;  // Skip the first 10 seconds
+            }
+        });
+
+        // Reset to the 0-second mark when the video ends naturally
+        video.addEventListener('ended', function() {
+            video.currentTime = 0;  // Reset to the first frame
+            leftMiddleLogo.classList.remove('hidden'); // Show the left middle logo when the video ends
+            bottomRightLogo.classList.remove('hidden'); // Show the WINLAB logo when the video ends
+            aboutButton.classList.remove('hidden'); // Show the About Me button when the video ends
+        });
+
+        // Toggle the About Me text box and button appearance
+        aboutButton.addEventListener('click', function() {
+            aboutButton.classList.toggle('expanded'); // Toggle the expanded state
+            aboutText.classList.toggle('show-text'); // Show/Hide the text box
+        });
+
+        // Also collapse the About Me text box if it is clicked
+        aboutText.addEventListener('click', function() {
+            aboutButton.classList.remove('expanded'); // Collapse the button
+            aboutText.classList.remove('show-text'); // Hide the text box
+        });
+    </script>
+</body>
+</html>
+
