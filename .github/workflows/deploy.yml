@@ -1,0 +1,66 @@
+name: Jekyll Build and Deploy
+
+on:
+  push:
+    branches:
+      - main   # Change this to your default branch if it's not 'main'
+  pull_request:
+    branches:
+      - '**'   # Optional, triggers for pull requests
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'  # Only run on non-main branches
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 'latest'
+
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+
+    - name: Build Jekyll site for testing
+      run: bundle exec jekyll build -d test
+
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: test
+        path: test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # Ensures the 'test' job runs before 'deploy'
+    if: github.ref == 'refs/heads/main'  # Only run on the main branch
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 'latest'
+
+    - name: Install dependencies
+      run: |
+        gem install bundler
+        bundle install
+
+    - name: Build Jekyll site for production
+      run: bundle exec jekyll build -d public
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+
